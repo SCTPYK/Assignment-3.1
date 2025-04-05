@@ -1,0 +1,29 @@
+name: Destroy Terraform Resources
+
+on:
+  workflow_dispatch:  
+
+jobs:
+  terraform_destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: '1.3.0'  
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        run: |
+          terraform destroy -auto-approve  # -auto-approve skips the confirmation prompt
+        env:
+          TF_VAR_example_variable: ${{ secrets.TF_VAR_example_variable }}  # example of a secret variable, replace with actual ones
+
+      - name: Clean up
+        run: terraform workspace select default || terraform workspace new default  # if you're using workspaces
